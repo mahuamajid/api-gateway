@@ -1,0 +1,52 @@
+server:
+  port: ${SERVER_PORT:7082}
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    config:
+      uri: http://localhost:7082
+    discovery:
+      enabled: true
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders: "*"
+      routes:
+        - id: dicegame-service
+          uri: lb://dicegame-service
+          predicates:
+            - Path=/api/v1/dicegame/**
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/notification/**
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:7081/eureka
+  instance:
+    hostname: localhost
+    instanceId: ${spring.application.name}:${server.port}
+    preferIpAddress: false
+
+management:
+  endpoints:
+    health:
+      enabled: true
+    web:
+      exposure:
+        include: info, health, metrics
