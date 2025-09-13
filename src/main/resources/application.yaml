@@ -1,11 +1,27 @@
 server:
   port: ${SERVER_PORT:7082}
+
+springdoc:
+  enable-native-support: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway
+        primaryName: API Gateway
+      - url: /dicegame-service/v3/api-docs
+        name: Dice Game Service
+        primaryName: Dice Game Service
+
 spring:
   application:
     name: api-gateway
   cloud:
     config:
-      uri: http://localhost:7082
+      enable: false
     discovery:
       enabled: true
     gateway:
@@ -24,16 +40,8 @@ spring:
               - PUT
               - DELETE
             allowedHeaders: "*"
-      routes:
-        - id: dicegame-service
-          uri: lb://dicegame-service
-          predicates:
-            - Path=/api/v1/dicegame/**
 
-        - id: notification-service
-          uri: lb://notification-service
-          predicates:
-            - Path=/api/v1/notification/**
+
 eureka:
   client:
     serviceUrl:
